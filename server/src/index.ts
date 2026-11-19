@@ -13,7 +13,7 @@ app.use(httpLogger);
 
 // Health
 app.get("/health", (_req: Request, res: Response) => {
-  res.json({ ok: true, service: "inji-interop-playground-bff" });
+  res.json({ ok: true, service: "digidaret-api" });
 });
 
 // Start

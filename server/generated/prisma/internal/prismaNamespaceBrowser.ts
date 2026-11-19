@@ -51,8 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  TestRun: 'TestRun',
-  RunEvent: 'RunEvent'
+
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -69,100 +68,4 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
-
-
-export const TestRunScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  finishedAt: 'finishedAt',
-  durationMs: 'durationMs',
-  issuer: 'issuer',
-  wallet: 'wallet',
-  verifier: 'verifier',
-  format: 'format',
-  proofType: 'proofType',
-  flowMode: 'flowMode',
-  tamper: 'tamper',
-  moduleVersions: 'moduleVersions',
-  verificationResult: 'verificationResult',
-  expectedResult: 'expectedResult',
-  outcome: 'outcome',
-  failedStep: 'failedStep',
-  errorDetail: 'errorDetail',
-  credentialSnapshot: 'credentialSnapshot',
-  notes: 'notes',
-  parentRunId: 'parentRunId'
-} as const
-
-export type TestRunScalarFieldEnum = (typeof TestRunScalarFieldEnum)[keyof typeof TestRunScalarFieldEnum]
-
-
-export const RunEventScalarFieldEnum = {
-  id: 'id',
-  runId: 'runId',
-  stepOrder: 'stepOrder',
-  phase: 'phase',
-  stepName: 'stepName',
-  direction: 'direction',
-  fromActor: 'fromActor',
-  toActor: 'toActor',
-  httpMethod: 'httpMethod',
-  url: 'url',
-  statusCode: 'statusCode',
-  headers: 'headers',
-  payload: 'payload',
-  latencyMs: 'latencyMs',
-  isError: 'isError',
-  createdAt: 'createdAt'
-} as const
-
-export type RunEventScalarFieldEnum = (typeof RunEventScalarFieldEnum)[keyof typeof RunEventScalarFieldEnum]
-
-
-export const SortOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-
-export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
-
-
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
