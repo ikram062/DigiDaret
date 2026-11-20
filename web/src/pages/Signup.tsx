@@ -1,13 +1,15 @@
 import { useState, type FormEvent } from "react"
-import { Link, useNavigate } from "react-router"
+import { Link, useNavigate, useSearchParams } from "react-router"
 import { useAuth } from "@/auth/context"
 import { ApiError, languageLabel, type Language } from "@/lib/api"
+import { safeNext } from "@/lib/next"
 import { AuthShell } from "./AuthShell"
 import { Field, FormError, SelectField, SubmitButton } from "./Field"
 
 export function Signup() {
   const { signup } = useAuth()
   const navigate = useNavigate()
+  const nextParam = safeNext(useSearchParams()[0].get("next"))
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -29,7 +31,7 @@ export function Signup() {
     setFieldErrors({})
     try {
       await signup(form)
-      navigate("/app", { replace: true })
+      navigate(nextParam ?? "/app", { replace: true })
     } catch (err) {
       const apiErr = err instanceof ApiError ? err : null
       setError(apiErr?.message ?? "Something went wrong. Please try again.")
@@ -46,7 +48,7 @@ export function Signup() {
       footer={
         <>
           Already have an account?{" "}
-          <Link to="/login" className="font-semibold text-forest hover:underline">
+          <Link to={nextParam ? `/login?next=${encodeURIComponent(nextParam)}` : "/login"} className="font-semibold text-forest hover:underline">
             Log in
           </Link>
         </>

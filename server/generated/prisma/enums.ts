@@ -26,3 +26,50 @@ export const KycStatus = {
 } as const
 
 export type KycStatus = (typeof KycStatus)[keyof typeof KycStatus]
+
+
+export const CircleStatus = {
+  FORMING: 'FORMING',
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type CircleStatus = (typeof CircleStatus)[keyof typeof CircleStatus]
+
+
+export const OrderMode = {
+  AUTOMATIC: 'AUTOMATIC',
+  MANUAL: 'MANUAL'
+} as const
+
+export type OrderMode = (typeof OrderMode)[keyof typeof OrderMode]
+
+
+export const MemberStatus = {
+  JOINED: 'JOINED',
+  LEFT: 'LEFT',
+  REMOVED: 'REMOVED'
+} as const
+
+export type MemberStatus = (typeof MemberStatus)[keyof typeof MemberStatus]
+
+
+export const RoundStatus = {
+  UPCOMING: 'UPCOMING',
+  COLLECTING: 'COLLECTING',
+  PAID_OUT: 'PAID_OUT'
+} as const
+
+export type RoundStatus = (typeof RoundStatus)[keyof typeof RoundStatus]
+
+
+export const ContributionStatus = {
+  PENDING: 'PENDING',
+  PAID_ON_TIME: 'PAID_ON_TIME',
+  PAID_IN_GRACE: 'PAID_IN_GRACE',
+  COVERED_UNPAID: 'COVERED_UNPAID',
+  COVERED_REPAID: 'COVERED_REPAID'
+} as const
+
+export type ContributionStatus = (typeof ContributionStatus)[keyof typeof ContributionStatus]

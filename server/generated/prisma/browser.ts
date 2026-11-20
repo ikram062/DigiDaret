@@ -22,3 +22,23 @@ export * from './enums.ts';
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model Circle
+ * 
+ */
+export type Circle = Prisma.CircleModel
+/**
+ * Model CircleMember
+ * 
+ */
+export type CircleMember = Prisma.CircleMemberModel
+/**
+ * Model Round
+ * 
+ */
+export type Round = Prisma.RoundModel
+/**
+ * Model Contribution
+ * 
+ */
+export type Contribution = Prisma.ContributionModel

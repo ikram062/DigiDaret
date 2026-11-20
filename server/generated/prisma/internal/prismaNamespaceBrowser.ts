@@ -51,7 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  User: 'User',
+  Circle: 'Circle',
+  CircleMember: 'CircleMember',
+  Round: 'Round',
+  Contribution: 'Contribution'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -83,6 +87,73 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const CircleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  monthlyAmount: 'monthlyAmount',
+  memberCount: 'memberCount',
+  startDate: 'startDate',
+  graceDays: 'graceDays',
+  orderMode: 'orderMode',
+  status: 'status',
+  rulesVersion: 'rulesVersion',
+  inviteToken: 'inviteToken',
+  inviteActive: 'inviteActive',
+  orderSeed: 'orderSeed',
+  organizerId: 'organizerId',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CircleScalarFieldEnum = (typeof CircleScalarFieldEnum)[keyof typeof CircleScalarFieldEnum]
+
+
+export const CircleMemberScalarFieldEnum = {
+  id: 'id',
+  circleId: 'circleId',
+  userId: 'userId',
+  status: 'status',
+  acceptedRulesVersion: 'acceptedRulesVersion',
+  acceptedAt: 'acceptedAt',
+  orderApproved: 'orderApproved',
+  payoutPosition: 'payoutPosition',
+  orderScore: 'orderScore',
+  joinedAt: 'joinedAt'
+} as const
+
+export type CircleMemberScalarFieldEnum = (typeof CircleMemberScalarFieldEnum)[keyof typeof CircleMemberScalarFieldEnum]
+
+
+export const RoundScalarFieldEnum = {
+  id: 'id',
+  circleId: 'circleId',
+  index: 'index',
+  dueDate: 'dueDate',
+  recipientMemberId: 'recipientMemberId',
+  status: 'status'
+} as const
+
+export type RoundScalarFieldEnum = (typeof RoundScalarFieldEnum)[keyof typeof RoundScalarFieldEnum]
+
+
+export const ContributionScalarFieldEnum = {
+  id: 'id',
+  roundId: 'roundId',
+  memberId: 'memberId',
+  userId: 'userId',
+  amount: 'amount',
+  dueDate: 'dueDate',
+  status: 'status',
+  paidAt: 'paidAt',
+  coveredAt: 'coveredAt',
+  repaidAt: 'repaidAt'
+} as const
+
+export type ContributionScalarFieldEnum = (typeof ContributionScalarFieldEnum)[keyof typeof ContributionScalarFieldEnum]
 
 
 export const SortOrder = {

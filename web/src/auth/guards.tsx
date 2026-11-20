@@ -1,4 +1,5 @@
-import { Navigate, Outlet, useLocation } from "react-router"
+import { Navigate, Outlet, useLocation, useSearchParams } from "react-router"
+import { safeNext } from "@/lib/next"
 import { useAuth } from "./context"
 
 function Splash() {
@@ -21,7 +22,10 @@ export function RequireAuth() {
 /** Login and signup pages: logged-in users are sent straight to the app. */
 export function GuestOnly() {
   const { user } = useAuth()
+  const [params] = useSearchParams()
+  const from = (useLocation().state as { from?: string } | null)?.from
   if (user === undefined) return <Splash />
-  if (user) return <Navigate to="/app" replace />
+  // As soon as login or signup succeeds this runs, so it must honour "go back to where you were"
+  if (user) return <Navigate to={safeNext(params.get("next")) ?? safeNext(from) ?? "/app"} replace />
   return <Outlet />
 }

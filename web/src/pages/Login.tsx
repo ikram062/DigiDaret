@@ -1,14 +1,18 @@
 import { useState, type FormEvent } from "react"
-import { Link, useLocation, useNavigate } from "react-router"
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router"
 import { useAuth } from "@/auth/context"
 import { ApiError } from "@/lib/api"
+import { safeNext } from "@/lib/next"
 import { AuthShell } from "./AuthShell"
 import { Field, FormError, SubmitButton } from "./Field"
 
 export function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const from = (useLocation().state as { from?: string } | null)?.from ?? "/app"
+  const [params] = useSearchParams()
+  const stateFrom = (useLocation().state as { from?: string } | null)?.from
+  const nextParam = safeNext(params.get("next"))
+  const from = nextParam ?? safeNext(stateFrom) ?? "/app"
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string>()
@@ -39,7 +43,7 @@ export function Login() {
       footer={
         <>
           New to DigiDaret?{" "}
-          <Link to="/signup" className="font-semibold text-forest hover:underline">
+          <Link to={nextParam ? `/signup?next=${encodeURIComponent(nextParam)}` : "/signup"} className="font-semibold text-forest hover:underline">
             Create an account
           </Link>
         </>

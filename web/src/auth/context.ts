@@ -15,6 +15,8 @@ export type AuthState = {
   login: (email: string, password: string) => Promise<void>
   signup: (input: SignupInput) => Promise<void>
   logout: () => Promise<void>
+  /** re-read the user from the server (e.g. after identity verification) */
+  refresh: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthState | null>(null)

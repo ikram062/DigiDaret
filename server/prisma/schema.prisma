@@ -34,5 +34,134 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
+  organizedCircles Circle[]       @relation("OrganizedCircles")
+  memberships      CircleMember[]
+  contributions    Contribution[]
+
   @@map("users")
+}
+
+// ---------- Circles ----------
+
+enum CircleStatus {
+  FORMING // rules are being set, members are joining and accepting
+  ACTIVE // started: the rules and the payout order are frozen
+  COMPLETED // everyone has received the pot
+  CANCELLED // never started
+}
+
+// AUTOMATIC: ordered by reliability points, newcomers last (random if everyone is new).
+// MANUAL: the organizer proposes an order and every member must approve it.
+enum OrderMode {
+  AUTOMATIC
+  MANUAL
+}
+
+enum MemberStatus {
+  JOINED
+  LEFT // left before the circle started
+  REMOVED // removed by the organizer before the circle started
+}
+
+enum RoundStatus {
+  UPCOMING
+  COLLECTING
+  PAID_OUT
+}
+
+// The outcomes from the report. These facts are what the Reliability Level is built from.
+enum ContributionStatus {
+  PENDING
+  PAID_ON_TIME
+  PAID_IN_GRACE
+  COVERED_UNPAID // the Safety Fund covered it, the member still owes it
+  COVERED_REPAID
+}
+
+model Circle {
+  id            String       @id @default(uuid())
+  name          String
+  monthlyAmount Int // MAD
+  memberCount   Int
+  startDate     DateTime     @db.Date // the first due date
+  graceDays     Int          @default(3)
+  orderMode     OrderMode    @default(AUTOMATIC)
+  status        CircleStatus @default(FORMING)
+  // Bumped on every rules edit. Members must accept the current version.
+  rulesVersion  Int          @default(1)
+  inviteToken   String       @unique
+  inviteActive  Boolean      @default(true)
+  // Seed of the random draw (all-newcomer circles), kept so the draw can be audited
+  orderSeed     String?
+  organizerId   String
+  organizer     User         @relation("OrganizedCircles", fields: [organizerId], references: [id])
+  startedAt     DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  members CircleMember[]
+  rounds  Round[]
+
+  @@index([organizerId])
+  @@map("circles")
+}
+
+model CircleMember {
+  id                   String       @id @default(uuid())
+  circleId             String
+  circle               Circle       @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  userId               String
+  user                 User         @relation(fields: [userId], references: [id])
+  status               MemberStatus @default(JOINED)
+  acceptedRulesVersion Int?
+  acceptedAt           DateTime?
+  orderApproved        Boolean      @default(false)
+  payoutPosition       Int? // 1 = receives the pot in round 1
+  // Points used for automatic ordering. Private: never sent to other members.
+  orderScore           Int?
+  joinedAt             DateTime     @default(now())
+
+  recipientRounds Round[]
+  contributions   Contribution[]
+
+  @@unique([circleId, userId])
+  @@index([userId])
+  @@map("circle_members")
+}
+
+model Round {
+  id                String       @id @default(uuid())
+  circleId          String
+  circle            Circle       @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  index             Int // 1..memberCount
+  dueDate           DateTime     @db.Date
+  recipientMemberId String
+  recipient         CircleMember @relation(fields: [recipientMemberId], references: [id])
+  status            RoundStatus  @default(UPCOMING)
+
+  contributions Contribution[]
+
+  @@unique([circleId, index])
+  @@map("rounds")
+}
+
+model Contribution {
+  id        String             @id @default(uuid())
+  roundId   String
+  round     Round              @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    CircleMember       @relation(fields: [memberId], references: [id])
+  userId    String
+  user      User               @relation(fields: [userId], references: [id])
+  amount    Int
+  dueDate   DateTime           @db.Date
+  status    ContributionStatus @default(PENDING)
+  paidAt    DateTime?
+  coveredAt DateTime?
+  repaidAt  DateTime?
+
+  @@unique([roundId, memberId])
+  @@index([userId, dueDate])
+  @@map("contributions")
 }

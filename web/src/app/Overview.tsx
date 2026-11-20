@@ -1,12 +1,16 @@
+import { useState } from "react"
 import { Link } from "react-router"
 import { ArrowRight, ShieldAlert, ShieldCheck } from "lucide-react"
 import { useAuth } from "@/auth/context"
+import { api, fmtDate, mad, type Summary } from "@/lib/api"
+import { useFetch } from "@/lib/useFetch"
 import { cn } from "@/lib/utils"
+import { Btn, ErrorBox, Loading } from "./ui"
 
 const kycText = {
   UNVERIFIED: {
     chip: "Not verified",
-    body: "Before you can join a circle, a licensed partner checks your ID. DigiDaret never does that itself.",
+    body: "Before you can create or join a circle, a licensed partner checks your ID. DigiDaret never does that itself.",
   },
   PENDING: {
     chip: "Verification pending",
@@ -14,63 +18,83 @@ const kycText = {
   },
   VERIFIED: {
     chip: "Verified",
-    body: "Your identity has been checked by our licensed partner. You can join and create circles.",
+    body: "Your identity has been checked by our licensed partner. You can create and join circles.",
   },
 } as const
 
 export function Overview() {
-  const { user } = useAuth()
+  const { user, refresh } = useAuth()
+  const { data, error, loading, reload } = useFetch<Summary>("/me/summary")
+  const [busy, setBusy] = useState(false)
   if (!user) return null
+
   const kyc = kycText[user.kycStatus]
   const verified = user.kycStatus === "VERIFIED"
   const first = user.fullName.split(" ")[0]
+
+  async function verify() {
+    setBusy(true)
+    try {
+      await api("/me/verify-simulated", { method: "POST" })
+      await refresh()
+      reload()
+    } finally {
+      setBusy(false)
+    }
+  }
 
   return (
     <div>
       <p className="text-sm text-ink/50">Overview</p>
       <h1 className="mt-1 font-display text-4xl font-semibold text-ink sm:text-5xl">Salam, {first}</h1>
 
-      <div
-        className={cn(
-          "mt-8 flex items-start gap-4 rounded-2xl border p-5",
-          verified ? "border-jade/30 bg-jade/10" : "border-saffron/40 bg-saffron/15",
-        )}
-      >
-        {verified ? (
-          <ShieldCheck className="mt-0.5 size-6 shrink-0 text-forest" />
-        ) : (
-          <ShieldAlert className="mt-0.5 size-6 shrink-0 text-[#a86b0a]" />
-        )}
-        <div>
+      <div className={cn("mt-8 flex flex-wrap items-start gap-4 rounded-2xl border p-5", verified ? "border-jade/30 bg-jade/10" : "border-saffron/40 bg-saffron/15")}>
+        {verified ? <ShieldCheck className="mt-0.5 size-6 shrink-0 text-forest" /> : <ShieldAlert className="mt-0.5 size-6 shrink-0 text-[#a86b0a]" />}
+        <div className="min-w-0 flex-1">
           <div className="font-semibold text-ink">
             Identity: <span className="font-display">{kyc.chip}</span>
           </div>
           <p className="mt-1 text-sm text-ink/65">{kyc.body}</p>
         </div>
+        {!verified && import.meta.env.DEV && (
+          <Btn variant="accent" disabled={busy} onClick={verify}>
+            Verify (simulated)
+          </Btn>
+        )}
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <Stat label="Circles" value="0" note="You are not in a circle yet." />
-        <Stat label="Next payment" value="None" note="Nothing is due." />
-        <Stat
-          label="Reliability Level"
-          value="N"
-          note="Too early. A Level needs at least 3 months of payment history."
-        />
-      </div>
+      {data?.hasOpenDebt && (
+        <div className="mt-4">
+          <ErrorBox message="You owe a payment that the Safety Fund covered. You cannot join or create circles until it is settled." />
+        </div>
+      )}
+
+      {loading && <Loading />}
+      {error && <ErrorBox message={error} />}
+      {data && (
+        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+          <Stat label="Circles" value={String(data.activeCircles)} note={data.activeCircles === 0 ? "You are not in a circle yet." : "Forming or active."} to="/app/circles" />
+          <Stat
+            label="Next payment"
+            value={data.nextPayment ? mad(data.nextPayment.amount) : "None"}
+            note={data.nextPayment ? `${data.nextPayment.circleName}, ${fmtDate(data.nextPayment.dueDate)}` : "Nothing is due."}
+            to={data.nextPayment ? `/app/circles/${data.nextPayment.circleId}` : "/app/payments"}
+          />
+          <Stat
+            label="Reliability"
+            value={`${data.score.points}`}
+            note={`Level ${data.score.level}, ${data.score.levelName.toLowerCase()}. Only you see this.`}
+            to="/app/record"
+          />
+        </div>
+      )}
 
       <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-3xl bg-ink p-7 text-sand sm:flex-row sm:items-center">
         <div>
-          <h2 className="font-display text-2xl font-semibold">Start your first circle</h2>
-          <p className="mt-1 max-w-md text-sm text-sand/65">
-            Set the monthly amount and the number of members, then invite friends with a WhatsApp
-            link.
-          </p>
+          <h2 className="font-display text-2xl font-semibold">Start a circle</h2>
+          <p className="mt-1 max-w-md text-sm text-sand/65">Set the monthly amount and the number of members, then invite friends with a WhatsApp link.</p>
         </div>
-        <Link
-          to="/app/circles"
-          className="flex shrink-0 items-center gap-2 rounded-full bg-saffron px-5 py-3 text-sm font-semibold text-ink transition-transform hover:scale-[1.03]"
-        >
+        <Link to="/app/circles/new" className="flex shrink-0 items-center gap-2 rounded-full bg-saffron px-5 py-3 text-sm font-semibold text-ink transition-transform hover:scale-[1.03]">
           Create a circle <ArrowRight className="size-4" />
         </Link>
       </div>
@@ -78,12 +102,12 @@ export function Overview() {
   )
 }
 
-function Stat({ label, value, note }: { label: string; value: string; note: string }) {
+function Stat({ label, value, note, to }: { label: string; value: string; note: string; to: string }) {
   return (
-    <div className="rounded-2xl border border-ink/10 bg-white/60 p-5">
+    <Link to={to} className="rounded-2xl border border-ink/10 bg-white/60 p-5 transition hover:border-forest/40 hover:bg-white">
       <div className="text-xs uppercase tracking-widest text-ink/45">{label}</div>
       <div className="mt-2 font-display text-4xl font-semibold text-forest">{value}</div>
       <p className="mt-1 text-sm text-ink/55">{note}</p>
-    </div>
+    </Link>
   )
 }
