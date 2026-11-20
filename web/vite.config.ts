@@ -10,4 +10,12 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    port: 5173,
+    strictPort: true,
+    // The browser only ever talks to this origin, so the session cookie stays same-site.
+    proxy: {
+      "/api": "http://localhost:3001",
+    },
+  },
 });

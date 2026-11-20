@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.10.0",
   "engineVersion": "0edf323efd1d98336f3f0a68684b56f689b900d3",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n// The language the AI assistant explains the circle's rules in.\nenum Language {\n  DARIJA\n  ARABIC\n  FRENCH\n  ENGLISH\n}\n\n// Identity is checked by the licensed partner's own KYC, never by us.\n// Until a partner is connected every account starts UNVERIFIED.\nenum KycStatus {\n  UNVERIFIED\n  PENDING\n  VERIFIED\n}\n\nmodel User {\n  id                String    @id @default(uuid())\n  fullName          String\n  email             String    @unique\n  phone             String?   @unique\n  passwordHash      String\n  preferredLanguage Language  @default(ENGLISH)\n  kycStatus         KycStatus @default(UNVERIFIED)\n  createdAt         DateTime  @default(now())\n  updatedAt         DateTime  @updatedAt\n\n  @@map(\"users\")\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -32,10 +32,10 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fullName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"passwordHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"preferredLanguage\",\"kind\":\"enum\",\"type\":\"Language\"},{\"name\":\"kycStatus\",\"kind\":\"enum\",\"type\":\"KycStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"users\",\"schema\":null}},\"enums\":{},\"types\":{}}")
 config.parameterizationSchema = {
-  strings: JSON.parse("[]"),
-  graph: "AAAA"
+  strings: JSON.parse("[\"where\",\"User.findUnique\",\"User.findUniqueOrThrow\",\"orderBy\",\"cursor\",\"User.findFirst\",\"User.findFirstOrThrow\",\"User.findMany\",\"data\",\"User.createOne\",\"User.createMany\",\"User.createManyAndReturn\",\"User.updateOne\",\"User.updateMany\",\"User.updateManyAndReturn\",\"create\",\"update\",\"User.upsertOne\",\"User.deleteOne\",\"User.deleteMany\",\"having\",\"_count\",\"_min\",\"_max\",\"User.groupBy\",\"User.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"fullName\",\"email\",\"phone\",\"passwordHash\",\"Language\",\"preferredLanguage\",\"KycStatus\",\"kycStatus\",\"createdAt\",\"updatedAt\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"set\"]"),
+  graph: "OgkQDBoAACwAMBsAAAQAEBwAACwAMB0BAAAAAR4BAC0AIR8BAAAAASABAAAAASEBAC0AISMAAC8jIiUAADAlIiZAADEAISdAADEAIQEAAAABACABAAAAAQAgDBoAACwAMBsAAAQAEBwAACwAMB0BAC0AIR4BAC0AIR8BAC0AISABAC4AISEBAC0AISMAAC8jIiUAADAlIiZAADEAISdAADEAIQEgAAAyACADAAAABAAgAwAABQAwBAAAAQAgAwAAAAQAIAMAAAUAMAQAAAEAIAMAAAAEACADAAAFADAEAAABACAJHQEAAAABHgEAAAABHwEAAAABIAEAAAABIQEAAAABIwAAACMCJQAAACUCJkAAAAABJ0AAAAABAQgAAAkAIAkdAQAAAAEeAQAAAAEfAQAAAAEgAQAAAAEhAQAAAAEjAAAAIwIlAAAAJQImQAAAAAEnQAAAAAEBCAAACwAwAQgAAAsAMAkdAQA2ACEeAQA2ACEfAQA2ACEgAQA3ACEhAQA2ACEjAAA4IyIlAAA5JSImQAA6ACEnQAA6ACECAAAAAQAgCAAADgAgCR0BADYAIR4BADYAIR8BADYAISABADcAISEBADYAISMAADgjIiUAADklIiZAADoAISdAADoAIQIAAAAEACAIAAAQACACAAAABAAgCAAAEAAgAwAAAAEAIA8AAAkAIBAAAA4AIAEAAAABACABAAAABAAgBBUAADMAIBYAADUAIBcAADQAICAAADIAIAwaAAAaADAbAAAXABAcAAAaADAdAQAbACEeAQAbACEfAQAbACEgAQAcACEhAQAbACEjAAAdIyIlAAAeJSImQAAfACEnQAAfACEDAAAABAAgAwAAFgAwFAAAFwAgAwAAAAQAIAMAAAUAMAQAAAEAIAwaAAAaADAbAAAXABAcAAAaADAdAQAbACEeAQAbACEfAQAbACEgAQAcACEhAQAbACEjAAAdIyIlAAAeJSImQAAfACEnQAAfACEOFQAAIQAgFgAAKwAgFwAAKwAgKAEAAAABKQEAAAAEKgEAAAAEKwEAAAABLAEAAAABLQEAAAABLgEAAAABLwEAKgAhMAEAAAABMQEAAAABMgEAAAABDhUAACgAIBYAACkAIBcAACkAICgBAAAAASkBAAAABSoBAAAABSsBAAAAASwBAAAAAS0BAAAAAS4BAAAAAS8BACcAITABAAAAATEBAAAAATIBAAAAAQcVAAAhACAWAAAmACAXAAAmACAoAAAAIwIpAAAAIwgqAAAAIwgvAAAlIyIHFQAAIQAgFgAAJAAgFwAAJAAgKAAAACUCKQAAACUIKgAAACUILwAAIyUiCxUAACEAIBYAACIAIBcAACIAIChAAAAAASlAAAAABCpAAAAABCtAAAAAASxAAAAAAS1AAAAAAS5AAAAAAS9AACAAIQsVAAAhACAWAAAiACAXAAAiACAoQAAAAAEpQAAAAAQqQAAAAAQrQAAAAAEsQAAAAAEtQAAAAAEuQAAAAAEvQAAgACEIKAIAAAABKQIAAAAEKgIAAAAEKwIAAAABLAIAAAABLQIAAAABLgIAAAABLwIAIQAhCChAAAAAASlAAAAABCpAAAAABCtAAAAAASxAAAAAAS1AAAAAAS5AAAAAAS9AACIAIQcVAAAhACAWAAAkACAXAAAkACAoAAAAJQIpAAAAJQgqAAAAJQgvAAAjJSIEKAAAACUCKQAAACUIKgAAACUILwAAJCUiBxUAACEAIBYAACYAIBcAACYAICgAAAAjAikAAAAjCCoAAAAjCC8AACUjIgQoAAAAIwIpAAAAIwgqAAAAIwgvAAAmIyIOFQAAKAAgFgAAKQAgFwAAKQAgKAEAAAABKQEAAAAFKgEAAAAFKwEAAAABLAEAAAABLQEAAAABLgEAAAABLwEAJwAhMAEAAAABMQEAAAABMgEAAAABCCgCAAAAASkCAAAABSoCAAAABSsCAAAAASwCAAAAAS0CAAAAAS4CAAAAAS8CACgAIQsoAQAAAAEpAQAAAAUqAQAAAAUrAQAAAAEsAQAAAAEtAQAAAAEuAQAAAAEvAQApACEwAQAAAAExAQAAAAEyAQAAAAEOFQAAIQAgFgAAKwAgFwAAKwAgKAEAAAABKQEAAAAEKgEAAAAEKwEAAAABLAEAAAABLQEAAAABLgEAAAABLwEAKgAhMAEAAAABMQEAAAABMgEAAAABCygBAAAAASkBAAAABCoBAAAABCsBAAAAASwBAAAAAS0BAAAAAS4BAAAAAS8BACsAITABAAAAATEBAAAAATIBAAAAAQwaAAAsADAbAAAEABAcAAAsADAdAQAtACEeAQAtACEfAQAtACEgAQAuACEhAQAtACEjAAAvIyIlAAAwJSImQAAxACEnQAAxACELKAEAAAABKQEAAAAEKgEAAAAEKwEAAAABLAEAAAABLQEAAAABLgEAAAABLwEAKwAhMAEAAAABMQEAAAABMgEAAAABCygBAAAAASkBAAAABSoBAAAABSsBAAAAASwBAAAAAS0BAAAAAS4BAAAAAS8BACkAITABAAAAATEBAAAAATIBAAAAAQQoAAAAIwIpAAAAIwgqAAAAIwgvAAAmIyIEKAAAACUCKQAAACUIKgAAACUILwAAJCUiCChAAAAAASlAAAAABCpAAAAABCtAAAAAASxAAAAAAS1AAAAAAS5AAAAAAS9AACIAIQAAAAABMwEAAAABATMBAAAAAQEzAAAAIwIBMwAAACUCATNAAAAAAQAAAAADFQAGFgAHFwAIAAAAAxUABhYABxcACAECAQIDAQUGAQYHAQcIAQkKAQoMAgsNAwwPAQ0RAg4SBBETARIUARMVAhgYBRkZCQ"
 }
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
@@ -188,7 +188,15 @@ export interface PrismaClient<
     extArgs: ExtArgs
   }>>
 
-    
+      /**
+   * `prisma.user`: Exposes CRUD operations for the **User** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.user.findMany()
+    * ```
+    */
+  get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

@@ -1,40 +1,40 @@
-import { useEffect } from "react"
-import { ScrollTrigger } from "@/lib/gsap"
-import { initLenis } from "@/lib/lenis"
-import { Nav } from "@/sections/Nav"
-import { Hero } from "@/sections/Hero"
-import { Names } from "@/sections/Names"
-import { Problem } from "@/sections/Problem"
-import { HowItWorks } from "@/sections/HowItWorks"
-import { SafetyDemo } from "@/sections/SafetyDemo"
-import { TrustRecord } from "@/sections/TrustRecord"
-import { Assistant } from "@/sections/Assistant"
-import { Africa } from "@/sections/Africa"
-import { StatusFooter } from "@/sections/StatusFooter"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router"
+import { AuthProvider } from "@/auth/AuthProvider"
+import { GuestOnly, RequireAuth } from "@/auth/guards"
+import { Landing } from "@/pages/Landing"
+import { Login } from "@/pages/Login"
+import { Signup } from "@/pages/Signup"
+import { AppLayout } from "@/app/AppLayout"
+import { Overview } from "@/app/Overview"
+import { Assistant, Circles, Payments, Record } from "@/app/Sections"
 
 function App() {
-  useEffect(() => {
-    const destroy = initLenis()
-    // fonts change layout, so re-measure once they land
-    document.fonts?.ready.then(() => ScrollTrigger.refresh())
-    return destroy
-  }, [])
-
   return (
-    <>
-      <Nav />
-      <main>
-        <Hero />
-        <Names />
-        <Problem />
-        <HowItWorks />
-        <SafetyDemo />
-        <TrustRecord />
-        <Assistant />
-        <Africa />
-        <StatusFooter />
-      </main>
-    </>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+
+          <Route element={<GuestOnly />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Route>
+
+          {/* everything under /app needs a valid session */}
+          <Route path="/app" element={<RequireAuth />}>
+            <Route element={<AppLayout />}>
+              <Route index element={<Overview />} />
+              <Route path="circles" element={<Circles />} />
+              <Route path="payments" element={<Payments />} />
+              <Route path="record" element={<Record />} />
+              <Route path="assistant" element={<Assistant />} />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 

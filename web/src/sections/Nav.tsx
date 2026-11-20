@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router"
+import { useAuth } from "@/auth/context"
 import { Logo } from "@/components/fx/Zellige"
 import { scrollToTarget } from "@/lib/lenis"
 import { cn } from "@/lib/utils"
@@ -13,6 +15,7 @@ const links = [
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 40)
@@ -55,16 +58,29 @@ export function Nav() {
             </a>
           ))}
         </div>
-        <a
-          href="#safety"
-          onClick={(e) => {
-            e.preventDefault()
-            scrollToTarget("#safety")
-          }}
-          className="ml-2 rounded-full bg-saffron px-4 py-1.5 text-sm font-semibold text-ink transition-transform hover:scale-105"
-        >
-          Try the demo
-        </a>
+        {user ? (
+          <Link
+            to="/app"
+            className="ml-2 rounded-full bg-saffron px-4 py-1.5 text-sm font-semibold text-ink transition-transform hover:scale-105"
+          >
+            Open app
+          </Link>
+        ) : (
+          <div className="ml-2 flex items-center gap-1">
+            <Link
+              to="/login"
+              className="rounded-full px-3.5 py-1.5 text-sm font-medium text-sand transition-colors hover:bg-white/10"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/signup"
+              className="rounded-full bg-saffron px-4 py-1.5 text-sm font-semibold text-ink transition-transform hover:scale-105"
+            >
+              Sign up
+            </Link>
+          </div>
+        )}
       </nav>
     </header>
   )
